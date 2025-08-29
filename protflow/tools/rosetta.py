@@ -71,6 +71,7 @@ import time
 import logging
 from glob import glob
 import shutil
+import random
 
 # dependencies
 import pandas as pd
@@ -446,8 +447,10 @@ class Rosetta(Runner):
         flags = " -" + " -".join(flags) if flags else ""
         overwrite = " -overwrite" if overwrite else ""
 
+        timer = round(random.uniform(0, 5), 4) # to prevent simultaneous db access, which leads to clashes
+
         # compile command
-        run_string = f"{rosetta_application} -out:path:all {output_dir} -in:file:s {pose_path} -out:prefix r{str(i).zfill(4)}_ -out:file:scorefile r{str(i).zfill(4)}_{os.path.splitext(os.path.basename(pose_path))[0]}_score.json -out:file:scorefile_format json {opts} {flags} {overwrite}"
+        run_string = f"sleep {timer}; {rosetta_application} -out:path:all {output_dir} -in:file:s {pose_path} -out:prefix r{str(i).zfill(4)}_ -out:file:scorefile r{str(i).zfill(4)}_{os.path.splitext(os.path.basename(pose_path))[0]}_score.json -out:file:scorefile_format json {opts} {flags} {overwrite}"
         
         logging.debug(f"Run command: {run_string}")
 
